@@ -2,41 +2,24 @@
 
 import React from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
-  ScrollView,
   View,
   Text,
-  StatusBar,
   Button,
+  TouchableOpacity,
 } from 'react-native';
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 class MyHomeScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Home',
-    drawerIcon: () => (
-      <Text>X</Text>
-    ),
-  };
-
+ 
   props: any;
 
   render() {
     return (
-      <View style={{ marginTop: 100 }}>
+      <View>
         <Text>Home Screen</Text>
-        <Button
-          onPress={() => this.props.navigation.navigate('Notifications')}
-          title="Go to notifications"
-        />
+       
       </View>
 
     );
@@ -44,22 +27,13 @@ class MyHomeScreen extends React.Component {
 }
 
 class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Notifications',
-    drawerIcon: () => (
-      <Text>X</Text>
-    ),
-  };
+ 
   props: any;
 
   render() {
     return (
-      <View style={{ marginTop: 100 }}>
+      <View>
         <Text>Notifications Screen</Text>
-        <Button
-          onPress={() => this.props.navigation.goBack()}
-          title="Go back home"
-        />
 
       </View>
 
@@ -68,23 +42,76 @@ class MyNotificationsScreen extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  icon: {
-    width: 24,
-    height: 24,
-  },
-});
 
-const MyDrawerNavigator = createDrawerNavigator({
-  Home: {
+//@ts-ignore
+const homeStackNavigator = createStackNavigator({
+  home: {
     screen: MyHomeScreen,
-  },
-  Notifications: {
-    screen: MyNotificationsScreen,
-  },
+    navigationOptions: () => ({
+      header: <View></View>,
+      drawerLabel: 'Home',
+    }),
+  }
 });
 
-const MyApp = createAppContainer(MyDrawerNavigator);
+//@ts-ignore
+const notificationStackNavigator = createStackNavigator({
+  notification: {
+    screen: MyNotificationsScreen,
+    navigationOptions: () => ({
+      header: <View></View>,
+    }),
+    
+  }
+});
+
+const drawerNavigator = createDrawerNavigator({
+  homeStackNavigator: {
+    screen:homeStackNavigator,
+    navigationOptions: {
+      drawerLabel: 'Home'
+    }
+
+  } ,
+  notificationStackNavigator: {
+    screen:notificationStackNavigator,
+    navigationOptions: {
+      drawerLabel: 'Notification'
+    }
+  },
+}, {
+    initialRouteName: 'homeStackNavigator'
+  })
+
+const appStackNavigator = createStackNavigator({
+  drawerNavigator: {
+    screen: drawerNavigator,
+    navigationOptions: ({navigation}) => ({
+      title: 'Home',
+      headerLeft: (
+      <TouchableOpacity onPress={()=>{
+        navigation.openDrawer()
+      }}>
+         <Text>MENU</Text>
+      </TouchableOpacity>
+     ),
+    }),
+  },
+}, {
+    initialRouteName: 'drawerNavigator',
+  });
+
+
+// const MyDrawerNavigator = createDrawerNavigator({
+//   Home: {
+//     screen: MyHomeScreen,
+//   },
+//   Notifications: {
+//     screen: MyNotificationsScreen,
+//   },
+// });
+
+const MyApp = createAppContainer(appStackNavigator);
 
 export default MyApp;
 
